@@ -1,13 +1,28 @@
 require 'gosu'
 
-class Crunchy window
-    
-    def initialize
-        @window = window
-        
-        
-    end
-    
+class Crunchy
+   
+   def initialize window
+    @image = Gosu::Image.new window, "Crunchy_Pictures/Left-Facing-Crunchy-the-Snail.jpg", false
+    @x = 0
+    @y = 0
+    @speed
+   end
+   
+   def warp x, y
+    @x = x
+    @y = y
+   end
+   
+   def move
+    @x += @speed
+    @y += @speed
+   end
+   
+   def draw
+    @image.draw @x, @y, 0
+   end
+   
 end
 
 class GameWindow < Gosu::Window
@@ -16,11 +31,12 @@ class GameWindow < Gosu::Window
     super
     self.caption = "Gosu Tutorial Game"
     
-    @image = Gosu::Image.new self, "Crunchy_Pictures/Left-Facing-Crunchy-the-Snail.jpg", true
+    @crunchy1 = Crunchy.new(self)
+    @crunchy1.warp 320, 240
   end
   
   def button_down id
-      close if id == Gosu::KbEscape
+    close if id == Gosu::KbEscape
   end
 
   def update
@@ -28,7 +44,7 @@ class GameWindow < Gosu::Window
   end
 
   def draw
-      @image.draw 400 - @image.width/2, 300 - @image.height/2, 0
+    @player.draw
   end
 end
 
