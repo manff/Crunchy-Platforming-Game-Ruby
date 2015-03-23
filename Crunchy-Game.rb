@@ -6,7 +6,7 @@ class GameWindow < Gosu::Window
     super
     self.caption = "Gosu Tutorial Game"
     
-    @image = Gosu::Image.new self, "Crunchy_Media/Left-Facing-Crunchy-the-Snail.jpg", true
+    @image = Gosu::Image.new self, "Crunchy_Pictures/Left-Facing-Crunchy-the-Snail.jpg", true
   end
   
   def button_down id
