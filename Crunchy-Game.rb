@@ -1,5 +1,15 @@
 require 'gosu'
 
+class Crunchy window
+    
+    def initialize
+        @window = window
+        
+        
+    end
+    
+end
+
 class GameWindow < Gosu::Window
     
   def initialize width=800, height=600, fullscreen=false
