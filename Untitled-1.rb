@@ -8,9 +8,11 @@ class GameWindow < Gosu::Window
     
     @image = Gosu::Image.from_text self, "Hello World", Gosu.default_font_name, 100
     
+    @crunchy = Gosu::Image self, 100
+    
     @music = Gosu::Song.new "Crunchy_Music/The Underground.mp3"
     
-    @music.play
+    @music.play(looping=true)
     
   end
   
@@ -21,10 +23,15 @@ class GameWindow < Gosu::Window
   def update
       @x = self.width/2 - @image.width/2 + Math.sin(Time.now.to_f)+100
       @y = self.height/2 - @image.height/2 + Math.cos(Time.now.to_f)+200
+      
+      @crunchyX = 200
+      @crunchyY = 200
   end
 
   def draw
       @image.draw @x, @y, 0
+      
+      @crunchy.draw @crunchyX, @crunchyY, 0
   end
 end
 
