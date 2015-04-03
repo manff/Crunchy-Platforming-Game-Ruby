@@ -1,36 +1,91 @@
 require 'gosu'
 
-
-class Crunchy
-    
-    def initialize(window)
-        $moveing = false
-        $facing_right = false
+class Character
+    def move
+        if ($moving) then
+            if ($facing_right) then
+                @x += 5
+            else
+                @x -= 5
+            end
+        end
         
-
-        @crunchy_right = Gosu::Image.new(window, "Crunchy_Pictures/Crunchy-Right.png", false)
-        @crunchy_left = Gosu::Image.new(window, "Crunchy_Pictures/Crunchy-Left.png", false)
+        if ($jumping) then
+            if (@up_key_down)
+                $jumping = true
+                @jump_speed = -5
+            end
+        end
+        
+        @jump_speed += $gravity
+        @y += @jump_speed
+        
+        if (@y > 350) then
+            @y = 350
+            @jump_speed = 0
+            @jumping = false
+        end
     end
     
-    
-    
-    def draw(x, y)
-        @x = x
-        @y = y
-        
-        
-        
+    def draw
         if ($facing_right) then
-            @crunchy_right.draw(@x, @y, 0)
+            @pic_right.draw(@x, @y, 0)
         else
-            @crunchy_left.draw(@x, @y, 0)
+            @pic_left.draw(@x, @y, 0)
         end
     end
 end
 
-class Enemy
-    
+
+class Crunchy < Character
+    def initialize(window)
+        $moveing = false
+        $facing_right = false
+        
+        $gravity = 0.14
+        
+        $up_key_down = false
+        $down_key_down = false
+        
+        @crunchy_x = 200
+        @crunchy_y = 200
+        
+        @x = @crunchy_x
+        @y = @crunchy_y
+
+        @jumping = false
+        @jump_speed = 0
+
+        @crunchy_right = Gosu::Image.new(window, "Crunchy_Pictures/Crunchy-Right.png", false)
+        @crunchy_left = Gosu::Image.new(window, "Crunchy_Pictures/Crunchy-Left.png", false)
+        
+        @pic_right = @crunchy_right
+        @pic_left = @crunchy_left
+    end
 end
+
+
+class Enemy
+    def draw
+        @enemy_pic_left.draw(@tad_x, @tad_y, 0)
+    end
+    
+    def move
+        @timer += 1
+        
+        if (@timer > 100)
+            @tadRight = !@tadRight
+            @timer = 0
+        end
+        
+        if (@tadRight) then
+            @tad_x += 5
+        else
+            @tad_x -= 5
+        end
+    end
+end
+
 
 class Tad < Enemy
     def initialize(window)
@@ -38,27 +93,48 @@ class Tad < Enemy
         @timer = 0
         @tadRight = false
         
-        @x = 200
-        @y = 200
+        @enemy_pic_left = @tad_right
+        
+        @tad_x = 500
+        @tad_y = 200
     end
-    
+end
+
+class Collectable
     def draw
-        @tad_right.draw(@x, @y, 0)
+        @collectable.draw(@coin_x, @coin_y, 0)
     end
-    
-    def update
-        @timer += 1
+end
+
+class Coin < Collectable
+    def initialize(window)
+        @coin_x = 300
+        @coin_y = 300
+        @coin = Gosu::Image.new(window, "Crunchy_Pictures/Coin.png", false)
+        @collectable = @coin
+    end
+end
+
+class SlimeCoin <Collectable
+    def initialize(window)
         
-        if (@timer > 500)
-            @tadRight = !@tadRight
-            @timer = 0
-        end
+    end
+end
+
+class Block
+    def draw
+        @block.draw(@x, @y, 0, 1.5, 1.5)
+    end
+end
+
+
+class GrassBlock < Block
+    def initialize(window)
+        @grass_block = Gosu::Image.new(window, "Crunchy_Pictures/Grass-Block.png", false)
+        @block = @grass_block
         
-        if (@tadRight) then
-            @x += 10
-        else
-            @x -= 10
-        end
+        @x = 100
+        @y = 100
     end
 end
 
@@ -81,9 +157,8 @@ class GameWindow < Gosu::Window
     super
     self.caption = "Gosu Tutorial Game"
     
-    @crunchy_move_x = 200
-    @crunchy_move_y = 200
-    
+    @coin_test = Coin.new(self)
+    @grass_block_test = GrassBlock.new(self)
     @tad_test = Tad.new(self)
     @crunchy1 = Crunchy.new(self)
     @world1 = World.new(self, "Crunchy_Pictures/World-One-Background.jpeg")
@@ -101,6 +176,14 @@ class GameWindow < Gosu::Window
           $facing_right = false
           $moving = true
       end
+      
+      if id == Gosu::KbUp then
+          $up_key_down = true
+      end
+      
+      if id == Gosu::KbDown then
+          $down_key_down = true
+      end
   end
   
   def button_up(id)
@@ -111,27 +194,30 @@ class GameWindow < Gosu::Window
       if id == Gosu::KbLeft && !$facing_right then
           $moving = false
       end
+      
+      if id == Gosu::KbUp then
+          $up_key_down = false
+      end
+      
+      if id == Gosu::KbDown then
+          $down_key_down = false
+      end
   end
 
   def update
-      if ($moving) then
-          if ($facing_right) then
-              @crunchy_move_x += 5
-              else
-              @crunchy_move_x -= 5
-          end
-      end
       
-      @tad_test.update
+      @crunchy1.move
+      @tad_test.move
       
       
   end
 
   def draw
     @world1.draw
-    @crunchy1.draw(@crunchy_move_x, @crunchy_move_y)
+    @crunchy1.draw
     @tad_test.draw
-    
+    @grass_block_test.draw
+    @coin_test.draw
   end
 end
 
