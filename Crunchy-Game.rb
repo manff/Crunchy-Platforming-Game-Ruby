@@ -130,93 +130,40 @@ class SlimeCoin < Collectable
     end
 end
 
+
 class Block
-    def initialize
-        
+    def initialize(window)
+        @block = Gosu::Image.new(window, "Crunchy_Pictures/Grass-Block.png", false)
     end
     
     def draw
-        
+        @block.draw(0, 0, 0)
     end
+    
 end
 
-class World
+
+class Map
+    def initialize(window)
+        $col = 0
+        $row = 0
+        @levels = [
+            ["    #   ",
+             "    #   ",
+             "    #   "],
+             
+            ["  ",
+             "  "]
+         ]
+         @level = 0
+
+    end
     
-   def initialize(window, backgroundFileName)
-       @levels = [
-       
-       [    "....................",
-            "....................",
-            "....................",
-            "....................",
-            "....................",
-            "....................",
-            "....................",
-            "....................",
-       ],
-       [    "...........",
-            "...........",
-       ]
-       
-       ]
-       
-       @level = 0
-       @levelSize = [0, 0]
-       
-       @background = Gosu::Image.new(window, backgroundFileName, false)
-       
-       @grass_block = Gosu::Image.new(window, "Crunchy_Pictures/Grass-Block.png", false)
-       
-#       @filename = "Crunchy-Levels/1-1.txt"
-#       
-#       @grid = Array.new {Array.new}
-#       
-#       for
-#       
-#       lines = File.readlines(@filename).map { |line| line.chomp }
-#       @height = lines.size
-#       @width = lines[0].size
-#       @tiles = Array.new(@width) do |x|
-#           Array.new(@height) do |y|
-#               case lines[y][x, 1]
-#                   when '#'
-#                   @array[x][y] = 1
-#                   nil
-#                   else
-#                   nil
-#               end
-#           end
-#       end
-   end
-   
-#   def draw
-#       @background.draw(0, 0, 0)
-#   end
-
-#   def draw_level
-#      for i in 0..@array.length
-#          for j in 0..@array[0].length
-#              if (@array[i][j] == 1) then
-#                  
-#                  @grass_block.draw(5, 5)
-#              end
-#          end
-#      end
-#   end
-
-    def loadMap
-        @col = 0
-        @row = 0
-        while(@col < @levels[@level].length)
-            @col += 1
-            while(@row < @levels[@level][@col].length)
-                @row += 1
-                s = @levels[@level][col][row]
-                
-                if (s == "b")
-                    
-                end
-                
+    def load
+        while($col < @levels[@level].length)
+            $col += 1
+            while($row < @levels[@level][$col].length)
+                $row += 1
             end
         end
     end
@@ -233,12 +180,13 @@ class GameWindow < Gosu::Window
     super
     self.caption = "Gosu Tutorial Game"
     
+    @block = Block.new(self)
     @coin_test = Coin.new(self)
     @slime_coin_test = SlimeCoin.new(self)
-    
     @tad_test = Tad.new(self)
     @crunchy1 = Crunchy.new(self)
-    @world1 = World.new(self, "Crunchy_Pictures/World-One-Background.jpeg")
+    @map = Map.new(self)
+    @map.load
   end
   
   def button_down(id)
@@ -283,6 +231,8 @@ class GameWindow < Gosu::Window
     @tad_test.draw
     @coin_test.draw
     @slime_coin_test.draw
+    @block.draw
+    @map.apply
   end
 end
 
