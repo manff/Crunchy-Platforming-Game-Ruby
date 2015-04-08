@@ -139,8 +139,11 @@ class Block
     def draw
         @block.draw(0, 0, 0)
     end
-    
 end
+
+#def add_block
+#    
+#end
 
 
 class Map
@@ -149,8 +152,8 @@ class Map
         $row = 0
         @levels = [
             ["    #   ",
-             "    #   ",
-             "    #   "],
+             "        ",
+             "        "],
              
             ["  ",
              "  "]
@@ -160,16 +163,21 @@ class Map
     end
     
     def load
-        while($col < @levels[@level].length)
+        while($col < @levels[@level].to_s.length)
             $col += 1
-            while($row < @levels[@level][$col].length)
+            while($row < @levels[@level][$col].to_s.length)
                 $row += 1
+                $s = @levels[@level][$col][$row]
+                
+                if ($s == "#")
+                    @block1 = Block.new(self)
+                end
             end
         end
     end
     
     def apply
-        
+#        @block1.draw
     end
 end
 
