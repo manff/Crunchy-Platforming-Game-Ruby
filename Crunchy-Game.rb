@@ -132,18 +132,16 @@ end
 
 
 class Block
-    def initialize(window)
+    def initialize(window, x, y)
+        @x = x
+        @y = y
         @block = Gosu::Image.new(window, "Crunchy_Pictures/Grass-Block.png", false)
     end
     
     def draw
-        @block.draw(0, 0, 0)
+        @block.draw(@x, @y, 0)
     end
 end
-
-#def add_block
-#    
-#end
 
 
 class Map
@@ -159,25 +157,28 @@ class Map
              "  "]
          ]
          @level = 0
-
+         @blocks = []
     end
     
     def load
-        while($col < @levels[@level].to_s.length)
-            $col += 1
-            while($row < @levels[@level][$col].to_s.length)
-                $row += 1
-                $s = @levels[@level][$col][$row]
-                
-                if ($s == "#")
-                    @block1 = Block.new(self)
+        @levels.each do |x|
+            x.each do |y|
+                y.split("").each do |z|
+                    if(z == "#")
+                        @blocks.push(Block.new($self, 10, z))
+                        
+                        puts "get working"
+                    end
                 end
             end
+            puts "__"
         end
     end
     
     def apply
-#        @block1.draw
+        @blocks.each do |c|
+            c.draw
+        end
     end
 end
 
@@ -188,7 +189,8 @@ class GameWindow < Gosu::Window
     super
     self.caption = "Gosu Tutorial Game"
     
-    @block = Block.new(self)
+    $self = self
+    
     @coin_test = Coin.new(self)
     @slime_coin_test = SlimeCoin.new(self)
     @tad_test = Tad.new(self)
@@ -239,7 +241,6 @@ class GameWindow < Gosu::Window
     @tad_test.draw
     @coin_test.draw
     @slime_coin_test.draw
-    @block.draw
     @map.apply
   end
 end
