@@ -1,6 +1,18 @@
 require 'gosu'
 
 class Character
+    def collision
+        $blocks_y.each do |y|
+            $blocks_x.each do |x|
+                if (@y > y && @x + 60 > x && @x < x + 30)
+                    @y = y
+                    @jump_speed = 0
+                    @jumping = false
+                end
+            end
+        end
+    end
+    
     def move
         if ($moving) then
             if ($facing_right) then
@@ -20,11 +32,11 @@ class Character
         @jump_speed += $gravity
         @y += @jump_speed
         
-        if (@y > 350) then
-            @y = 350
-            @jump_speed = 0
-            @jumping = false
-        end
+#        if (@y > 510) then
+#            @y = 510
+#            @jump_speed = 0
+#            @jumping = false
+#        end
     end
     
     def draw
@@ -102,7 +114,7 @@ end
 
 class Collectable
     def draw
-        @collectable.draw(@x, @y, 0)
+        @collectable.draw($coin_x, $coin_y, 0)
     end
 end
 
@@ -111,8 +123,8 @@ class Coin < Collectable
     def initialize(window)
         coin_x = 300
         coin_y = 300
-        @x = coin_x
-        @y = coin_y
+        $coin_x = coin_x
+        $coin_y = coin_y
         coin = Gosu::Image.new(window, "Crunchy_Pictures/Coin.png", false)
         @collectable = coin
     end
@@ -133,9 +145,9 @@ end
 
 class Block
     def initialize(window, x, y)
-        @x = x
-        @y = y
         @block = Gosu::Image.new(window, "Crunchy_Pictures/Grass-Block.png", false)
+        
+        @x, @y = x, y
     end
     
     def draw
@@ -149,25 +161,61 @@ class Map
         $col = 0
         $row = 0
         @levels = [
-            ["    #   ",
-             "        ",
-             "        "],
+            ["#                 #      ##",
+             "#    #                    #",
+             "#                         #",
+             "#       #                 #",
+             "#   #          #          #",
+             "#                         #",
+             "#                         #",
+             "#                         #",
+             "#                  #      #",
+             "#                         #",
+             "#                         #",
+             "#       #                 #",
+             "#                         #",
+             "#                         #",
+             "#            #            #",
+             "#                         #",
+             "#                         #",
+             "#                         #",
+             "#                         #",
+             "###########################"],
              
             ["  ",
              "  "]
          ]
          @level = 0
          @blocks = []
+         $blocks_x = []
+         $blocks_y = []
+         
+         @width = window.width
+         @height = window.height
+         @x = -30
+         @y = -30
     end
     
     def load
-        @levels.each do |x|
-            x.each do |y|
-                y.split("").each do |z|
-                    if(z == "#")
-                        @blocks.push(Block.new($self, 10, z))
+        @levels.each do |level|
+            level.each do |y|
+                @y += 30
+                y.split("").each do |x|
+                    @x += 30
+                    
+                    if (@x == y.length * 30) then
+                        @x = 0
+                    end
+                    
+                    if (x == "#") then
+                        @blocks.push(Block.new($self, @x, @y))
                         
-                        puts "get working"
+                        $blocks_x.push(@x)
+                        $blocks_y.push(@y)
+                        
+                        puts "Getting Map"
+                        puts "block x: #{@x}"
+                        puts "block y: #{@y}"
                     end
                 end
             end
@@ -234,6 +282,7 @@ class GameWindow < Gosu::Window
   def update
       @crunchy1.move
       @tad_test.move
+      @crunchy1.collision
   end
 
   def draw
